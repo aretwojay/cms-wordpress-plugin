@@ -23,32 +23,31 @@ Plugin WordPress permettant de communiquer avec un CMS headless via API REST.
 
 1. Renseigner l'URL de base de l'API (ex: `https://api.example.com`)
 2. Entrer le login et le mot de passe
-3. Cliquer sur **Se connecter**
+3. Optionnel : renseigner la secret key
+4. Cliquer sur **Se connecter**
 
 ## Endpoints API attendus
 
 Le plugin communique avec les endpoints suivants :
 
-| Methode | Endpoint        | Description              |
-| ------- | --------------- | ------------------------ |
-| POST    | `/auth/login`   | Authentification         |
-| GET     | `/content`      | Liste des contenus       |
-| GET     | `/content/{id}` | Detail d'un contenu      |
-| PUT     | `/content/{id}` | Mise a jour d'un contenu |
+| Methode | Endpoint            | Description              |
+| ------- | ------------------- | ------------------------ |
+| POST    | `/api/login`        | Authentification         |
+| GET     | `/api/content`      | Liste des contenus       |
+| GET     | `/api/content/{id}` | Detail d'un contenu      |
+| PUT     | `/api/content/{id}` | Mise a jour d'un contenu |
 
 ## Shortcodes
 
 ### Liste de contenus
 
 ```
-[dhc_content_list limit="5" category="news" show_excerpt="true"]
+[dhc_content_list limit="5"]
 ```
 
 Parametres :
 
 - `limit` : nombre de contenus a afficher (defaut : 5)
-- `category` : filtrer par categorie
-- `show_excerpt` : afficher l'extrait (true/false)
 
 ### Contenu unique
 
@@ -58,7 +57,7 @@ Parametres :
 
 Parametres :
 
-- `id` : identifiant du contenu
+- `id` : identifiant du contenu (affiche titre + contenu)
 
 ### Champ specifique
 
@@ -69,28 +68,25 @@ Parametres :
 Parametres :
 
 - `id` : identifiant du contenu
-- `field` : nom du champ (title, excerpt, content, etc.)
+- `field` : nom du champ a afficher (title, content, excerpt, etc.)
 
 ## Structure du code
 
 ```
 decode-headless-connector/
-├── decode-headless-connector.php   # Fichier principal du plugin
+├── decode-headless-connector.php   # Point d'entree du plugin
 ├── README.md
 ├── assets/
 │   ├── admin.css                   # Styles de la page admin
-│   └── admin.js                    # Scripts jQuery pour l'admin
+│   └── admin.js                    # Scripts jQuery (AJAX)
 └── includes/
-    ├── class-dhc-admin.php         # Page d'administration et AJAX
-    ├── class-dhc-api-client.php    # Client HTTP pour l'API
-    ├── class-dhc-cache.php         # Gestion du cache (transients)
-    ├── class-dhc-helpers.php       # Fonctions utilitaires
-    ├── class-dhc-plugin.php        # Classe principale du plugin
-    └── class-dhc-shortcodes.php    # Shortcodes
+    ├── dhc-api.php                 # Client API + cache (transients)
+    ├── dhc-admin.php               # Page d'administration et handlers AJAX
+    └── dhc-shortcodes.php          # Shortcodes
 ```
 
 ## Standards
 
-- Code organise en programmation orientee objet (POO)
+- Code organise en programmation orientee objet (POO) : 3 classes (DHC_Api, DHC_Admin, DHC_Shortcodes)
 - Respect des standards WordPress (nonces, capabilities, sanitization, escaping)
 - Securite : verification des droits, echappement des sorties, validation des entrees
