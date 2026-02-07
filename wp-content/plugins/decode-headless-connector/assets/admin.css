@@ -1,0 +1,100 @@
+/**
+ * Styles d'administration du plugin Decode Headless Connector.
+ *
+ * @package DecodeHeadlessConnector
+ */
+
+/* Grille de la page admin */
+.dhc-wrap .dhc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Carte generique */
+.dhc-card {
+  background: #fff;
+  border: 1px solid #ccd0d4;
+  padding: 15px 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.dhc-card h2 {
+  margin-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Carte pleine largeur */
+.dhc-card.full {
+  grid-column: 1 / -1;
+}
+
+/* Champs de formulaire */
+.dhc-card label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dhc-card input[type="text"],
+.dhc-card input[type="url"],
+.dhc-card input[type="password"],
+.dhc-card input[type="number"] {
+  width: 100%;
+}
+
+/* Statut de connexion */
+.dhc-label.ok {
+  color: #46b450;
+  font-weight: bold;
+}
+
+.dhc-label.ko {
+  color: #dc3232;
+  font-weight: bold;
+}
+
+/* Messages */
+#dhc-login-msg,
+#dhc-cache-msg {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+/* Liste des shortcodes */
+.dhc-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.dhc-card li {
+  margin-bottom: 8px;
+}
+
+.dhc-card code {
+  background: #f1f1f1;
+  padding: 3px 6px;
+}
+
+/* Editeur de contenu */
+.dhc-editor {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f9f9f9;
+  border: 1px solid #ccd0d4;
+  border-radius: 4px;
+}
+
+.dhc-editor h3 {
+  margin-top: 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+  .dhc-wrap .dhc-grid {
+    grid-template-columns: 1fr;
+  }
+}

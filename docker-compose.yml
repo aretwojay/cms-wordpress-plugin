@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: wp_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    platform: linux/amd64
+    container_name: wp_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: wp_user
+      PMA_PASSWORD: wp_pass
+
+  wordpress:
+    image: wordpress:latest
+    platform: linux/amd64
+    container_name: wp_app
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_pass
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content/plugins/decode-headless-connector:/var/www/html/wp-content/plugins/decode-headless-connector
+
+volumes:
+  db_data:
+  wp_data:
