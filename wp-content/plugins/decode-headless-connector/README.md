@@ -21,7 +21,7 @@ Plugin WordPress permettant de communiquer avec un CMS headless via API REST.
 
 ## Configuration
 
-1. Renseigner l'URL de base de l'API (ex: `https://api.example.com`)
+1. Renseigner l'URL de base de l'API (ex: `http://host.docker.internal:9080`)
 2. Entrer le login et le mot de passe
 3. Optionnel : renseigner la secret key
 4. Cliquer sur **Se connecter**

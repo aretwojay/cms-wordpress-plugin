@@ -11,9 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Chargement des fichiers classes.
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-dhc-api.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-dhc-admin.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-dhc-shortcodes.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/dhc-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/dhc-admin.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/dhc-shortcodes.php';
 // Initialisation globale.
 function dhc_start() {
 	// Instance unique de l'API partagée.

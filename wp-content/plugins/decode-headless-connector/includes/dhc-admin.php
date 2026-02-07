@@ -31,7 +31,7 @@ class DHC_Admin {
 	public function assets( $hook ) {
 		if ( 'toplevel_page_dhc-connector' !== $hook ) return;
 		wp_enqueue_style( 'dhc-admin', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/admin.css' );
-		wp_enqueue_script( 'dhc-admin', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/admin.js', array( 'jquery' ), '1.0', true );
+		wp_enqueue_script( 'dhc-admin', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/admin.js', array(), '1.0', true );
 		wp_localize_script( 'dhc-admin', 'DHC', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'dhc_nonce' ) ) );
 	}
 
@@ -158,7 +158,7 @@ class DHC_Admin {
 			echo '<tr>';
 			echo '<td>' . esc_html( $item['id'] ?? '' ) . '</td>';
 			echo '<td>' . esc_html( $item['title'] ?? '' ) . '</td>';
-			echo '<td><button class="button dhc-edit" data-id="' . esc_attr( $item['id'] ) . '">Modif</button></td>';
+			echo '<td><button class="button dhc-edit" data-id="' . esc_attr( $item['id'] ) . '" data-title="' . esc_attr( $item['title'] ?? '' ) . '" data-content="' . esc_attr( $item['content'] ?? '' ) . '">Modif</button></td>';
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
@@ -183,7 +183,6 @@ class DHC_Admin {
 		$id      = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
 		$title   = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 		$content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : '';
-
 		if ( ! $id ) {
 			wp_send_json_error( array( 'message' => 'ID manquant.' ) );
 		}

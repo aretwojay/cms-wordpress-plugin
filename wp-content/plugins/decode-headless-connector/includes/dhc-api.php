@@ -24,7 +24,7 @@ class DHC_Api {
 		$args = array(
 			'method'  => $method,
 			'timeout' => 10,
-			'headers' => array( 'Content-Type' => 'application/json' ),
+			'headers' => array(),
 		);
 
 		if ( $auth && $this->get_token() ) {
@@ -34,12 +34,10 @@ class DHC_Api {
 		if ( 'GET' === $method && ! empty( $data ) ) {
 			$url = add_query_arg( $data, $url );
 		} else if ( ! empty( $data ) ) {
-			$args['body'] = wp_json_encode( $data );
+			$args['body'] = $data;
 		}
 
-        var_dump($url);
 		$response = wp_remote_request( $url, $args );
-
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
@@ -57,14 +55,14 @@ class DHC_Api {
 
 	public function login( $login, $password, $secret = '' ) {
 		$data = array(
-			'login'    => $login,
+			'email'    => $login,
 			'password' => $password,
 		);
 		if ( $secret ) {
 			$data['secret_key'] = $secret;
 		}
 
-		$res = $this->request( 'POST', '/login', $data, false );
+		$res = $this->request( 'POST', '/api/login', $data, false );
 		if ( is_wp_error( $res ) ) {
 			return $res;
 		}
@@ -92,7 +90,7 @@ class DHC_Api {
 			}
 		}
 
-		$res = $this->request( 'GET', '/content', $params );
+		$res = $this->request( 'GET', '/api/content', $params );
 
 		if ( ! is_wp_error( $res ) && get_option( 'dhc_cache_enabled' ) ) {
 			$ttl = (int) get_option( 'dhc_cache_ttl', 300 );
@@ -112,8 +110,7 @@ class DHC_Api {
 			}
 		}
 
-		$res = $this->request( 'GET', '/content/' . $id );
-
+		$res = $this->request( 'GET', '/api/content/' . $id );
 		if ( ! is_wp_error( $res ) && get_option( 'dhc_cache_enabled' ) ) {
 			$ttl = (int) get_option( 'dhc_cache_ttl', 300 );
 			set_transient( $cache_key, $res, $ttl );
@@ -123,7 +120,7 @@ class DHC_Api {
 	}
 
 	public function update_item( $id, $data ) {
-		return $this->request( 'PUT', '/content/' . $id, $data );
+		return $this->request( 'POST', '/api/content/' . $id, $data );
 	}
 
 	public function flush_cache() {

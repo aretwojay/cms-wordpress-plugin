@@ -39,12 +39,10 @@ class DHC_Shortcodes {
 	public function item( $atts ) {
 		if ( empty( $atts['id'] ) ) return 'ID manquant';
 		$item = $this->api->get_item( $atts['id'] );
-
 		if ( is_wp_error( $item ) ) return 'Erreur API';
 
 		$title = esc_html( $item['title'] ?? '' );
 		$content = wp_kses_post( $item['content'] ?? '' );
-
 		return "<article><h3>$title</h3><div>$content</div></article>";
 	}
 
