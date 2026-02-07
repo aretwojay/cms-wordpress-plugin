@@ -78,7 +78,7 @@ decode-headless-connector/
 ├── README.md
 ├── assets/
 │   ├── admin.css                   # Styles de la page admin
-│   └── admin.js                    # Scripts jQuery (AJAX)
+│   └── admin.js                    # Scripts JS (AJAX)
 └── includes/
     ├── dhc-api.php                 # Client API + cache (transients)
     ├── dhc-admin.php               # Page d'administration et handlers AJAX

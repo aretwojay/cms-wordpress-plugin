@@ -1,55 +1,61 @@
 /**
  * Admin JS - Decode Headless Connector.
  */
-(function () {
+(() => {
   "use strict";
 
-  // Raccourcis
-  function qs(sel) {
-    return document.querySelector(sel);
-  }
+  const qs = (sel) => document.querySelector(sel);
 
-  function msg(selector, text, color) {
-    var el = qs(selector);
+  const msg = (selector, text, color) => {
+    const el = qs(selector);
     if (el) {
       el.textContent = text;
       el.style.color = color;
     }
-  }
+  };
 
-  function ajaxPost(params, onSuccess, onError) {
-    var body = new URLSearchParams();
-    for (var key in params) {
-      if (params.hasOwnProperty(key)) {
-        body.append(key, params[key]);
-      }
+  const ajaxPost = (params, onSuccess, onError) => {
+    const body = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      body.append(key, value);
     }
 
     fetch(DHC.ajax_url, {
       method: "POST",
       credentials: "same-origin",
-      body: body,
+      body,
     })
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (res) {
+      .then((response) => response.json())
+      .then((res) => {
         if (res.success) {
           onSuccess(res.data);
         } else if (onError) {
           onError(res.data);
         }
       })
-      .catch(function () {
+      .catch(() => {
         if (onError) {
           onError({ message: "Erreur reseau" });
         }
       });
-  }
+  };
+
+  const loadContent = () => {
+    const area = qs("#dhc-content-area");
+    ajaxPost(
+      { action: "dhc_fetch_content", nonce: DHC.nonce },
+      (data) => {
+        if (area) area.innerHTML = data.html;
+      },
+      (data) => {
+        if (area) area.innerHTML = `Erreur: ${data.message || "Inconnue"}`;
+      },
+    );
+  };
 
   // Delegation d'evenements
-  document.addEventListener("click", function (e) {
-    var target = e.target;
+  document.addEventListener("click", (e) => {
+    const { target } = e;
 
     // Connexion
     if (target.id === "dhc-login-btn") {
@@ -65,13 +71,11 @@
           password: qs("#dhc-password").value,
           secret_key: qs("#dhc-secret").value,
         },
-        function (data) {
+        (data) => {
           msg("#dhc-login-msg", data.message, "green");
-          setTimeout(function () {
-            location.reload();
-          }, 500);
+          setTimeout(() => location.reload(), 500);
         },
-        function (data) {
+        (data) => {
           msg("#dhc-login-msg", data.message || "Erreur", "red");
         },
       );
@@ -80,7 +84,7 @@
 
     // Deconnexion
     if (target.id === "dhc-logout") {
-      ajaxPost({ action: "dhc_logout", nonce: DHC.nonce }, function () {
+      ajaxPost({ action: "dhc_logout", nonce: DHC.nonce }, () => {
         location.reload();
       });
       return;
@@ -96,7 +100,7 @@
           enabled: qs("#dhc-cache-enabled").checked,
           ttl: qs("#dhc-cache-ttl").value,
         },
-        function (data) {
+        (data) => {
           msg("#dhc-cache-msg", data.message, "green");
         },
       );
@@ -105,12 +109,9 @@
 
     // Cache - vider
     if (target.id === "dhc-flush-cache") {
-      ajaxPost(
-        { action: "dhc_flush_cache", nonce: DHC.nonce },
-        function (data) {
-          msg("#dhc-cache-msg", data.message, "green");
-        },
-      );
+      ajaxPost({ action: "dhc_flush_cache", nonce: DHC.nonce }, (data) => {
+        msg("#dhc-cache-msg", data.message, "green");
+      });
       return;
     }
 
@@ -122,50 +123,44 @@
 
     // Edition - ouvrir
     if (target.classList.contains("dhc-edit")) {
-      var id = target.getAttribute("data-id");
-      var row = target.closest("tr");
-      var cells = row ? row.querySelectorAll("td") : [];
-      var rowTitle = cells.length > 1 ? cells[1].textContent : "";
+      const id = target.getAttribute("data-id");
+      const row = target.closest("tr");
+      const cells = row ? row.querySelectorAll("td") : [];
+      const rowTitle = cells.length > 1 ? cells[1].textContent : "";
+      const dataTitle = (target.getAttribute("data-title") || "").replace(
+        /"/g,
+        "&quot;",
+      );
+      const dataContent = (target.getAttribute("data-content") || "")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 
-      var old = qs("#dhc-editor");
+      const old = qs("#dhc-editor");
       if (old) old.remove();
 
-      var html =
-        '<div id="dhc-editor" style="background:#fff;border:1px solid #ccc;padding:10px;margin-top:10px">';
-      html += "<h3>Editer #" + id + "</h3>";
-      html += '<input type="hidden" id="edit-id" value="' + id + '">';
-      html +=
-        '<p>Titre: <input type="text" id="edit-title" class="widefat" value="' +
-        target.getAttribute("data-title").replace(/"/g, "&quot;") +
-        '"></p>';
-      html +=
-        '<p>Contenu: <textarea id="edit-content" class="widefat" rows="5">' +
-        target
-          .getAttribute("data-content")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;") +
-        "</textarea></p>";
-      html +=
-        '<button id="save-edit" class="button button-primary">Sauvegarder</button> ';
-      html += '<button id="close-edit" class="button">Annuler</button>';
-      html += "</div>";
+      const html = `
+        <div id="dhc-editor" style="background:#fff;border:1px solid #ccc;padding:10px;margin-top:10px">
+          <h3>Editer #${id}</h3>
+          <input type="hidden" id="edit-id" value="${id}">
+          <p>Titre: <input type="text" id="edit-title" class="widefat" value="${dataTitle}"></p>
+          <p>Contenu: <textarea id="edit-content" class="widefat" rows="5">${dataContent}</textarea></p>
+          <button id="save-edit" class="button button-primary">Sauvegarder</button>
+          <button id="close-edit" class="button">Annuler</button>
+        </div>`;
 
-      var area = qs("#dhc-content-area");
+      const area = qs("#dhc-content-area");
       area.insertAdjacentHTML("beforebegin", html);
 
-      ajaxPost(
-        { action: "dhc_get_item", nonce: DHC.nonce, id: id },
-        function (data) {
-          qs("#edit-title").value = data.item.title || rowTitle;
-          qs("#edit-content").value = data.item.content || "";
-        },
-      );
+      ajaxPost({ action: "dhc_get_item", nonce: DHC.nonce, id }, (data) => {
+        qs("#edit-title").value = data.item.title || rowTitle;
+        qs("#edit-content").value = data.item.content || "";
+      });
       return;
     }
 
     // Edition - fermer
     if (target.id === "close-edit") {
-      var editor = qs("#dhc-editor");
+      const editor = qs("#dhc-editor");
       if (editor) editor.remove();
       return;
     }
@@ -181,13 +176,13 @@
           title: qs("#edit-title").value,
           content: qs("#edit-content").value,
         },
-        function () {
+        () => {
           alert("Article mis à jour");
-          var editor = qs("#dhc-editor");
+          const editor = qs("#dhc-editor");
           if (editor) editor.remove();
           loadContent();
         },
-        function () {
+        () => {
           alert("Erreur");
           target.textContent = "Sauvegarder";
         },
@@ -195,20 +190,6 @@
       return;
     }
   });
-
-  // Contenus
-  function loadContent() {
-    var area = qs("#dhc-content-area");
-    ajaxPost(
-      { action: "dhc_fetch_content", nonce: DHC.nonce },
-      function (data) {
-        if (area) area.innerHTML = data.html;
-      },
-      function (data) {
-        if (area) area.innerHTML = "Erreur: " + (data.message || "Inconnue");
-      },
-    );
-  }
 
   // Charger les contenus si connecte
   if (qs(".dhc-label.ok")) {
